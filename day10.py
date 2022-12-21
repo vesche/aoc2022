@@ -8,7 +8,7 @@ sprite = [1, 2, 3]
 
 def next_cycle():
     global cycle_n
-    if cycle_n == 20 or (cycle_n-20) % 40 == 0:
+    if (cycle_n - 20) % 40 == 0:
         ss.append(cycle_n*X)
     if cycle_n % 40 in sprite:
         draw.append('#')
