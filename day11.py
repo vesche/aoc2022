@@ -1,8 +1,7 @@
+import re, math, copy
 
 with open('inputs/day11.txt') as f:
     data = f.read().strip().split('\n\n')
-
-import re
 
 pattern = r"""Monkey [0-9]:
   Starting items: (?P<items>[0-9, ]*)
@@ -22,18 +21,28 @@ for d in data:
     md['inspected'] = 0
     monkeys.append(md)
 
-for _ in range(20):
-    for monkey in monkeys:
-        for item in monkey['items']:
-            monkey['inspected'] += 1
-            worry = eval(monkey['op'].replace('old', str(item)))
-            worry = worry // 3
-            if worry % monkey['test'] == 0:
-                monkeys[monkey['if_true']]['items'].append(worry)
-            else:
-                monkeys[monkey['if_false']]['items'].append(worry)
-        monkey['items'] = []
+lcm = math.lcm(*[m['test'] for m in monkeys])
 
-a, b = sorted([i['inspected'] for i in monkeys])[::-1][:2]
-print(a*b)
+def run(monkeys, rounds, p1=True):
+    for _ in range(rounds):
+        for monkey in monkeys:
+            for item in monkey['items']:
+                monkey['inspected'] += 1
+                worry = eval(monkey['op'].replace('old', str(item)))
+                if p1:
+                    worry //= 3
+                else:
+                    worry %= lcm
+                if worry % monkey['test'] == 0:
+                    monkeys[monkey['if_true']]['items'].append(worry)
+                else:
+                    monkeys[monkey['if_false']]['items'].append(worry)
+            monkey['items'] = []
+
+    a, b = sorted([i['inspected'] for i in monkeys])[::-1][:2]
+    print(a*b)
+
+monkeys_p2 = copy.deepcopy(monkeys)
+run(monkeys, 20)
+run(monkeys_p2, 10000, p1=False)
 
